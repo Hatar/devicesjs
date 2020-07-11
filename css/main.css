@@ -1,0 +1,20 @@
+#map {
+  height: 400px;
+}
+.leaflet-draw-toolbar .leaflet-draw-draw-water {
+  background-position: -62px -2px;
+}
+
+.leaflet-touch .leaflet-draw-toolbar .leaflet-draw-draw-water {
+  background-position: -60px -1px;
+}
+.leaflet-draw-toolbar a:nth-child(6){
+  background:url('../device.png') no-repeat;
+  position: relative;
+  left: 5px;
+  top: 5px;
+}
+
+.btn-primary{
+  display: none !important;
+}
