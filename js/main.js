@@ -3,14 +3,19 @@ var data = {
 },
 	fname = document.querySelector("#fname"),
 	SubmitForm = document.querySelector('#submitForm'),
+	btnClose = document.querySelector('#close'),
+	deviceModal = document.querySelector('#device'),
 	x = 0,
-	y = 0;
-
+	y = 0,
+	modalId = 0;
 var map = L.map('map').setView([31.58831, -7.11138], 6);
+
 L.tileLayer('https://via.placeholder.com/{z}/{x}/{y}.png', {
 	attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
+
 // FeatureGroup is to store editable layers
+
 var drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
 var drawControl = new L.Control.Draw({
@@ -23,6 +28,7 @@ var drawControl = new L.Control.Draw({
 		}
 	}
 });
+
 
 var customMarker = L.Icon.extend({
 	options: {
@@ -88,10 +94,9 @@ L.DrawToolbar.include({
 		];
 	}
 });
-var modalId = 0;
+
 SubmitForm.addEventListener('submit', function (e) {
 	e.preventDefault();
-    console.log(typeof data.devices)
     let result = data.devices.filter(marker => marker.id === modalId);
 	if (result.length == 0) {
 		data.devices.push({
@@ -113,24 +118,45 @@ map.addControl(drawControl);
 map.on('draw:created', function (event) {
 	$("#device").modal();
 	var layer = event.layer,
-		type = event.layerType;
-	    x = layer._latlng.lat,
-		y = layer._latlng.lng
-	drawnItems.addLayer(layer);
-	modalId = layer._leaflet_id
-
-	SubmitForm.reset();
-	if (type === 'marker') {
-		layer.addEventListener('click', function (e) {
-			let result = data.devices.filter(marker => marker.id === e.target._leaflet_id);
-			if (result.length != 0) {
-				fname.value = result[0].fname;
+			type = event.layerType;
+			x = layer._latlng.lat,
+			y = layer._latlng.lng
+			drawnItems.addLayer(layer);
+			modalId = layer._leaflet_id
+			SubmitForm.reset();
+			//Click Button Close
+			btnClose.addEventListener('click',function(e){
+				if(fname.value === ''){
+						map.eachLayer(function(layer){
+						map.removeLayer(drawnItems._layers[modalId])
+					})
+				}
+			})
+			if (type === 'marker') {
+					layer.addEventListener('click', function (e) {
+					$('#device').modal('show');
+					let result = data.devices.filter(marker => marker.id === e.target._leaflet_id);
+					if (result.length != 0) {
+						fname.value = result[0].fname;
+					}
+				})
 			}
-			$('#device').modal('toggle');
-		})
-	}
-
 });
+
+
+map.on(L.Draw.Event.EDITSTOP, function(e) {
+	let values = drawnItems._layers
+	for (var key in values) {
+		for (var i in data.devices) {
+			if (key == data.devices[i].id) {
+				data.devices[i].x = values[key]._latlng.lat
+				data.devices[i].y = values[key]._latlng.lng
+			}
+		}
+		console.log(data)
+	}
+});
+
 //Get Data
 document.querySelector('#data').addEventListener('click', function () {
 	document.querySelector('.line').innerHTML = JSON.stringify(data)
