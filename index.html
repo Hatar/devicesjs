@@ -38,10 +38,7 @@
             </tbody>
          </table>
       </div>
-      <!--<div id="show"></div>-->
-      <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#exampleModal">
-      Launch demo modal
-      </button>
+      <!--Modal Devices-->
       <div class="modal fade" id="device" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" data-backdrop="static" data-keyboard="false" >
          <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -51,12 +48,37 @@
                      <span aria-hidden="true">&times;</span>
                   </button>
                </div>
-               <form action="" id="submitForm">
+               <form action="" id="submitFormDevice">
                   <div class="modal-body">
                      <div class="form-group">
                         <input type="hidden" name="id_marker" id="id_marker" class="modal"/>
-                        <label for="name">First Name :</label>
-                        <input type="text" name="fname" id="fname" class="form-control" placeholder="Enter Your First Name" aria-describedby="helpId" required>
+                        <label for="name">Name :</label>
+                        <input type="text" name="fname" id="fname" class="form-control" placeholder="Enter something" aria-describedby="helpId" required>
+                     </div>
+                  </div>
+                  <div class="modal-footer">
+                     <button type="submit" class="btn btn-success" id="save">Save</button>
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+       <!--Modal Lines-->
+       <div class="modal fade" id="lines" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" data-backdrop="static" data-keyboard="false" >
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title">Lines Info</h5>
+                  <button type="button" id="close" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <form action="" id="submitFormLines">
+                  <div class="modal-body">
+                     <div class="form-group">
+                        <input type="hidden" name="id_marker" id="id_marker" class="modal"/>
+                        <label for="name">Name :</label>
+                        <input type="text" name="nameL" id="nameL" class="form-control" placeholder="Enter something" aria-describedby="helpId" required>
                      </div>
                   </div>
                   <div class="modal-footer">

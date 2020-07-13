@@ -1,18 +1,24 @@
 var data = {
-	"devices":[]
+	"devices":[],
+	"lines" :[]
 },
 	fname = document.querySelector("#fname"),
-	SubmitForm = document.querySelector('#submitForm'),
-	btnClose = document.querySelector('#close'),
+	nameL = document.querySelector("#nameL"),
+	SubmitFormDev = document.querySelector('#submitFormDevice'),
+	SubmitFormLin = document.querySelector('#submitFormLines'),
+	btnClose = document.querySelectorAll('#close'),
 	deviceModal = document.querySelector('#device'),
 	x = 0,
 	y = 0,
-	modalId = 0;
-var map = L.map('map').setView([31.58831, -7.11138], 6);
-
-L.tileLayer('https://via.placeholder.com/{z}/{x}/{y}.png', {
-	attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
+	x1 =[],
+	y1 =[],
+	x2 =[],
+	yé =[],
+	modalId = 0,
+	map = L.map('map').setView([31.58831, -7.11138], 6);
+	L.tileLayer('https://via.placeholder.com/{z}/{x}/{y}.png', {
+		attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+	}).addTo(map);
 
 // FeatureGroup is to store editable layers
 
@@ -26,6 +32,13 @@ var drawControl = new L.Control.Draw({
 		shapeOptions: {
 			color: '#662d91'
 		}
+	},
+	rectangle :{
+
+		allowIntersection: false,
+		showArea: true,
+		metric: true,
+		repeatMode: true
 	}
 });
 
@@ -39,7 +52,8 @@ var customMarker = L.Icon.extend({
 
 L.DrawToolbar.include({
 	getModeHandlers: function (map) {
-		return [{
+		return [
+			{
 				enabled: true,
 				handler: new L.Draw.Polyline(map, {
 					metric: true,
@@ -63,7 +77,7 @@ L.DrawToolbar.include({
 					allowIntersection: false,
 					showArea: true,
 					metric: true,
-					repeatMode: false
+					repeatMode: true
 				}),
 				title: 'Add Line ',
 			},
@@ -94,8 +108,10 @@ L.DrawToolbar.include({
 		];
 	}
 });
+map.addControl(drawControl);
 
-SubmitForm.addEventListener('submit', function (e) {
+
+SubmitFormDev.addEventListener('submit', function (e) {
 	e.preventDefault();
     let result = data.devices.filter(marker => marker.id === modalId);
 	if (result.length == 0) {
@@ -105,34 +121,46 @@ SubmitForm.addEventListener('submit', function (e) {
 			x: x,
 			y: y
 		});
-		console.log(data)
-		SubmitForm.reset();
+		SubmitFormDev.reset();
 		$('#device').modal('toggle');
 	} else {
 		result[0].fname = fname.value;
-		SubmitForm.reset();
+		SubmitFormDev.reset();
 		$('#device').modal('toggle');
 	}
 })
-map.addControl(drawControl);
-map.on('draw:created', function (event) {
-	$("#device").modal();
-	var layer = event.layer,
-			type = event.layerType;
-			x = layer._latlng.lat,
-			y = layer._latlng.lng
+
+SubmitFormLin.addEventListener('submit', function (e) {
+	e.preventDefault();
+    let result = data.lines.filter(lines => lines.id === modalId);
+	if (result.length == 0) {
+		data.lines.push({
+			id: modalId,
+			nameL: nameL.value,
+			x1: x1,
+			y1: y1,
+			x2: x2,
+			y2: y2,
+		});
+console.log(data)
+		SubmitFormLin.reset();
+		$('#lines').modal('toggle');
+	} else {
+		result[0].nameL = nameL.value;
+		SubmitFormLin.reset();
+		$('#lines').modal('toggle');
+	}
+})
+map.on(L.Draw.Event.CREATED, function (event) {
+	var  type = event.layerType,
+				layer = event.layer;
 			drawnItems.addLayer(layer);
 			modalId = layer._leaflet_id
-			SubmitForm.reset();
-			//Click Button Close
-			btnClose.addEventListener('click',function(e){
-				if(fname.value === ''){
-						map.eachLayer(function(layer){
-						map.removeLayer(drawnItems._layers[modalId])
-					})
-				}
-			})
 			if (type === 'marker') {
+					SubmitFormDev.reset();
+					x = layer._latlng.lat,
+					y = layer._latlng.lng
+					$("#device").modal();
 					layer.addEventListener('click', function (e) {
 					$('#device').modal('show');
 					let result = data.devices.filter(marker => marker.id === e.target._leaflet_id);
@@ -141,22 +169,66 @@ map.on('draw:created', function (event) {
 					}
 				})
 			}
-});
-
-
-map.on(L.Draw.Event.EDITSTOP, function(e) {
-	let values = drawnItems._layers
-	for (var key in values) {
-		for (var i in data.devices) {
-			if (key == data.devices[i].id) {
-				data.devices[i].x = values[key]._latlng.lat
-				data.devices[i].y = values[key]._latlng.lng
+			if(type === 'rectangle'){
+				$("#lines").modal();
+				x1 = layer._latlngs[0][0],
+				y1 = layer._latlngs[0][1],
+				x2 = layer._latlngs[0][2],
+				y2 = layer._latlngs[0][3]
+				$("#lines").modal();
+				layer.addEventListener('click', function (e) {
+				$('#lines').modal('show');
+				let result = data.lines.filter(lines => lines.id === e.target._leaflet_id);
+				if (result.length != 0) {
+					nameL.value = result[0].nameL;
+				}
+			})
 			}
-		}
-		console.log(data)
-	}
-});
+			//btnClose.addEventListener('click',function(e){if(event.layerType === "rectangle") {console.log('lines')}})
+			for(var i=0;i<btnClose.length;i++){
+				btnClose[i].addEventListener('click',function(e){
+					if(type === 'marker') {
+						map.eachLayer(function(layer){
+							map.removeLayer(drawnItems._layers[modalId])
+						})
+					}else if(type === 'rectangle') {
+						map.eachLayer(function(layer){
+							map.removeLayer(drawnItems._layers[modalId])
+						})
+					}
+			})
+			}
+		});
 
+map.on(L.Draw.Event.EDITED, function(e) {
+	var layers = e.layers;
+	layers.eachLayer(function(layer) {
+		var LineId = L.stamp(layer);
+		if(layers.toGeoJSON().features[0].geometry.type === 'Polygon'){
+			let coordinates =layers.toGeoJSON().features[0].geometry.coordinates
+			console.log(coordinates)
+			for (var i in data.lines) {
+				if (LineId == data.lines[i].id) {
+					data.lines[i].x1 = coordinates[0][0]
+					data.lines[i].y1 = coordinates[0][1]
+					data.lines[i].x2 = coordinates[0][2]
+					data.lines[i].y2 = coordinates[0][3]
+				}
+				}
+			console.log(data.lines)
+	}
+	})
+		values = drawnItems._layers;
+		for (var key in values) {
+			for (var i in data.devices) {
+				if (key == data.devices[i].id) {
+					data.devices[i].x = values[key]._latlng.lat
+					data.devices[i].y = values[key]._latlng.lng
+				}
+			}
+			//console.log(data)
+		}
+});
 //Get Data
 document.querySelector('#data').addEventListener('click', function () {
 	document.querySelector('.line').innerHTML = JSON.stringify(data)
