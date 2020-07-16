@@ -1,13 +1,15 @@
-var data = {
+	var data = {
 	"devices":[],
 	"lines" :[]
 },
+	DataFile =[]
 	fname = document.querySelector("#fname"),
 	nameL = document.querySelector("#nameL"),
 	SubmitFormDev = document.querySelector('#submitFormDevice'),
 	SubmitFormLin = document.querySelector('#submitFormLines'),
 	btnClose = document.querySelectorAll('#close'),
 	deviceModal = document.querySelector('#device'),
+	list_icones = document.querySelector('#icones'),
 	x = 0,
 	y = 0,
 	x1 =[],
@@ -15,10 +17,9 @@ var data = {
 	x2 =[],
 	yé =[],
 	modalId = 0,
+	files = [],
 	map = L.map('map').setView([31.58831, -7.11138], 6);
-	L.tileLayer('https://via.placeholder.com/{z}/{x}/{y}.png', {
-		attribution: '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-	}).addTo(map);
+	L.tileLayer('https://via.placeholder.com/{z}/{x}/{y}.png').addTo(map);
 
 // FeatureGroup is to store editable layers
 
@@ -26,7 +27,7 @@ var drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
 var drawControl = new L.Control.Draw({
 	edit: {
-		featureGroup: drawnItems
+		featureGroup: drawnItems,
 	},
 	circle: {
 		shapeOptions: {
@@ -39,16 +40,29 @@ var drawControl = new L.Control.Draw({
 		showArea: true,
 		metric: true,
 		repeatMode: true
-	}
+	},
+	draw:{
+		polygon: {
+      shapeOptions: {
+        editing: {
+          className: ""
+	}}}}
 });
 
 
 var customMarker = L.Icon.extend({
 	options: {
-		iconSize: new L.Point(70, 70),
-		iconUrl: "https://img.icons8.com/dusk/64/000000/garage--v1.png"
+		iconSize: new L.Point(30, 30),
+		iconUrl: "../image/redMarker.png"
 	}
-});
+})
+
+var markrConfig = L.Icon.extend({
+	option:{
+		iconSize: new L.Point(30, 30),
+		iconUrl: document.querySelector('#image_3').src
+	}
+})
 
 L.DrawToolbar.include({
 	getModeHandlers: function (map) {
@@ -110,17 +124,17 @@ L.DrawToolbar.include({
 });
 map.addControl(drawControl);
 
-
 SubmitFormDev.addEventListener('submit', function (e) {
 	e.preventDefault();
     let result = data.devices.filter(marker => marker.id === modalId);
-	if (result.length == 0) {
+		if (result.length == 0) {
 		data.devices.push({
 			id: modalId,
 			fname: fname.value,
 			x: x,
 			y: y
 		});
+
 		SubmitFormDev.reset();
 		$('#device').modal('toggle');
 	} else {
@@ -142,7 +156,6 @@ SubmitFormLin.addEventListener('submit', function (e) {
 			x2: x2,
 			y2: y2,
 		});
-console.log(data)
 		SubmitFormLin.reset();
 		$('#lines').modal('toggle');
 	} else {
@@ -151,9 +164,11 @@ console.log(data)
 		$('#lines').modal('toggle');
 	}
 })
+
 map.on(L.Draw.Event.CREATED, function (event) {
+
 	var  type = event.layerType,
-				layer = event.layer;
+			layer = event.layer;
 			drawnItems.addLayer(layer);
 			modalId = layer._leaflet_id
 			if (type === 'marker') {
@@ -162,11 +177,13 @@ map.on(L.Draw.Event.CREATED, function (event) {
 					y = layer._latlng.lng
 					$("#device").modal();
 					layer.addEventListener('click', function (e) {
-					$('#device').modal('show');
-					let result = data.devices.filter(marker => marker.id === e.target._leaflet_id);
-					if (result.length != 0) {
-						fname.value = result[0].fname;
-					}
+						modalId = e.target._leaflet_id
+						$('#device').modal('show');
+						let result = data.devices.filter(device => device.id == e.target._leaflet_id);
+						if (result.length !== 0) {
+							fname.value = result[0].fname;
+						}
+						$('#device').modal('toggle');
 				})
 			}
 			if(type === 'rectangle'){
@@ -177,6 +194,7 @@ map.on(L.Draw.Event.CREATED, function (event) {
 				y2 = layer._latlngs[0][3]
 				$("#lines").modal();
 				layer.addEventListener('click', function (e) {
+				modalId = e.target._leaflet_id
 				$('#lines').modal('show');
 				let result = data.lines.filter(lines => lines.id === e.target._leaflet_id);
 				if (result.length != 0) {
@@ -184,14 +202,13 @@ map.on(L.Draw.Event.CREATED, function (event) {
 				}
 			})
 			}
-			//btnClose.addEventListener('click',function(e){if(event.layerType === "rectangle") {console.log('lines')}})
 			for(var i=0;i<btnClose.length;i++){
 				btnClose[i].addEventListener('click',function(e){
-					if(type === 'marker') {
+					if(type === 'marker' && fname.value === '') {
 						map.eachLayer(function(layer){
 							map.removeLayer(drawnItems._layers[modalId])
 						})
-					}else if(type === 'rectangle') {
+					}else if(type === 'rectangle' && nameL.value === '') {
 						map.eachLayer(function(layer){
 							map.removeLayer(drawnItems._layers[modalId])
 						})
@@ -206,7 +223,6 @@ map.on(L.Draw.Event.EDITED, function(e) {
 		var LineId = L.stamp(layer);
 		if(layers.toGeoJSON().features[0].geometry.type === 'Polygon'){
 			let coordinates =layers.toGeoJSON().features[0].geometry.coordinates
-			console.log(coordinates)
 			for (var i in data.lines) {
 				if (LineId == data.lines[i].id) {
 					data.lines[i].x1 = coordinates[0][0]
@@ -215,7 +231,6 @@ map.on(L.Draw.Event.EDITED, function(e) {
 					data.lines[i].y2 = coordinates[0][3]
 				}
 				}
-			console.log(data.lines)
 	}
 	})
 		values = drawnItems._layers;
@@ -226,10 +241,30 @@ map.on(L.Draw.Event.EDITED, function(e) {
 					data.devices[i].y = values[key]._latlng.lng
 				}
 			}
-			//console.log(data)
 		}
 });
+
 //Get Data
 document.querySelector('#data').addEventListener('click', function () {
 	document.querySelector('.line').innerHTML = JSON.stringify(data)
 })
+
+function ShowIcon(input, selector){
+	if (input.files && input.files[0])
+	{
+		var reader = new FileReader();
+		reader.onload = function (e) {
+		$('#'+selector).attr('src', e.target.result)
+		 };
+		reader.readAsDataURL(input.files[0]);
+	}
+}
+
+function saveData() {
+  var data = new FormData(document.getElementById("myForm"));
+	var inputs = document.querySelectorAll('input[type=file]');
+	Array.prototype.forEach.call(inputs[0].files, function(index){
+		data.append('files', index);
+	});
+	DataFile.push(data.getAll("myFile[]"))
+};

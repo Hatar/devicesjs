@@ -16,13 +16,41 @@
       <div class="container">
          <div class="row">
             <div class="col-md-12 text-center mt-4">
-               <div class="map" id="map">
-               </div>
+               <div class="map" id="map"></div>
             </div>
          </div>
+         <div class="row  upload">
+            <form id="myForm" enctype="multipart/form-data">
+               <div class="col-md-3 d-flex">
+                  <div class="image-upload">
+                     <label for="myFile_1">
+                        <img src="https://goo.gl/pB9rpQ" id="image_1"/>
+                     </label>
+                     <input type="file" name="myFile[]" id="myFile_1" onchange='ShowIcon(this, "image_1");saveData()'>
+                 </div>
+                 <div class="image-upload">
+                     <label for="myFile_2">
+                        <img src="https://goo.gl/pB9rpQ"  id="image_2"/>
+                     </label>
+                     <input type="file" name="myFile[]" id="myFile_2" onchange='ShowIcon(this, "image_2");saveData()'>
+                  </div>
+                  <div class="image-upload">
+                     <label for="myFile_3">
+                        <img src="https://goo.gl/pB9rpQ"  id="image_3"/>
+                     </label>
+                     <input type="file" name="myFile[]" id="myFile_3" onchange='ShowIcon(this, "image_3");saveData()'/>
+
+                  </div>
+               </div>
+            </form>
+         </div>
+         <div class="clearfix"></div>
          <div class="row text-center mt-3">
             <div class="col">
-               <button class="btn btn-danger" id="data">Get Data</button>
+               <button class="btn btn-danger btn-sm" id="data">Get Data</button>
+               <button class="btn btn-info btn-sm" id="data">Clear</button>
+               <button class="btn btn-primary btn-sm" id="data">Use</button>
+               <button class="btn btn-warning btn-sm" id="data">Warning</button>
             </div>
          </div>
          <table class="table table-bordered mt-3">
