@@ -2,7 +2,6 @@
 	"devices":[],
 	"lines" :[]
 },
-	DataFile =[]
 	fname = document.querySelector("#fname"),
 	nameL = document.querySelector("#nameL"),
 	SubmitFormDev = document.querySelector('#submitFormDevice'),
@@ -10,114 +9,87 @@
 	btnClose = document.querySelectorAll('#close'),
 	deviceModal = document.querySelector('#device'),
 	list_icones = document.querySelector('#icones'),
+	colors = ['#1E90FF', '#FF1493', '#32CD32', '#FF8C00', '#4B0082'],
+	drawingManager,
+	selectedColor,
+	selectedShape,
+	colorButtons = {},
 	x = 0,
 	y = 0,
 	x1 =[],
 	y1 =[],
 	x2 =[],
-	yé =[],
+	y2 =[],
 	modalId = 0,
-	files = [],
 	map = L.map('map').setView([31.58831, -7.11138], 6);
 	L.tileLayer('https://via.placeholder.com/{z}/{x}/{y}.png').addTo(map);
+	clearBtn.onclick = (e)=>{
+		if(id_layer.value) drawnItems._layers[id_layer.value]._icon.src = document.querySelector("#image_1").src
+	};
 
-// FeatureGroup is to store editable layers
+	useBtn.onclick =  (e)=>{
+		if(id_layer.value) drawnItems._layers[id_layer.value]._icon.src = document.querySelector("#image_2").src
+	};
 
-var drawnItems = new L.FeatureGroup();
-map.addLayer(drawnItems);
-var drawControl = new L.Control.Draw({
-	edit: {
-		featureGroup: drawnItems,
-	},
-	circle: {
-		shapeOptions: {
-			color: '#662d91'
+	warBtn.onclick =  (e)=>{
+		if(id_layer.value) drawnItems._layers[id_layer.value]._icon.src = document.querySelector("#image_3").src
+	};
+
+	var drawnItems = new L.FeatureGroup();
+	map.addLayer(drawnItems);
+
+	var drawControl = new L.Control.Draw({
+		edit: {
+			featureGroup: drawnItems,
+		},
+		rectangle :{
+			allowIntersection: false,
+			showArea: true,
+			metric: true,
+			repeatMode: true,
 		}
-	},
-	rectangle :{
+	});
 
-		allowIntersection: false,
-		showArea: true,
-		metric: true,
-		repeatMode: true
-	},
-	draw:{
-		polygon: {
-      shapeOptions: {
-        editing: {
-          className: ""
-	}}}}
-});
+	var customMarker = L.Icon.extend({
+		options: {
+			iconSize: new L.polygon(30, 30),
+			iconUrl: "../image/detecteur.png"
+		}
+	})
 
-
-var customMarker = L.Icon.extend({
-	options: {
-		iconSize: new L.Point(30, 30),
-		iconUrl: "../image/redMarker.png"
-	}
-})
-
-var markrConfig = L.Icon.extend({
-	option:{
-		iconSize: new L.Point(30, 30),
-		iconUrl: document.querySelector('#image_3').src
-	}
-})
 
 L.DrawToolbar.include({
 	getModeHandlers: function (map) {
 		return [
 			{
 				enabled: true,
-				handler: new L.Draw.Polyline(map, {
-					metric: true,
-					repeatMode: true
-				}),
-				title: '...'
-			},
-			{
-				enabled: true,
-				handler: new L.Draw.Polygon(map, {
-					allowIntersection: false,
-					showArea: true,
-					metric: true,
-					repeatMode: false
-				}),
-				title: '...'
-			},
-			{
-				enabled: true,
 				handler: new L.Draw.Rectangle(map, {
 					allowIntersection: false,
 					showArea: true,
 					metric: true,
-					repeatMode: true
+					repeatMode: true,
+					shapeOptions: {
+						color: '#F2F2F2',
+						weight: 5,
+						fillOpacity: .5
+					}
 				}),
 				title: 'Add Line ',
 			},
 			{
 				enabled: true,
-				handler: new L.Draw.Circle(map, {
-					allowIntersection: false,
-					showArea: true,
-					metric: true,
-					repeatMode: false
-				}),
-				title: 'Add Detecteur'
-			},
-			{
-				enabled: true,
 				handler: new L.Draw.Marker(map, {
-					icon: new L.Icon.Default()
+				//icon: new L.Icon.Default()
+				//	icon:new configMarker()
 				}),
-				title: 'Add Marker'
+				title: 'Add Device'
 			},
 			{
 				enabled: true,
 				handler: new L.Draw.Marker(map, {
 					icon: new customMarker()
 				}),
-				title: 'Add Device',
+				title: 'Add Detecteur',
 			}
 		];
 	}
@@ -144,6 +116,7 @@ SubmitFormDev.addEventListener('submit', function (e) {
 	}
 })
 
+
 SubmitFormLin.addEventListener('submit', function (e) {
 	e.preventDefault();
     let result = data.lines.filter(lines => lines.id === modalId);
@@ -164,15 +137,17 @@ SubmitFormLin.addEventListener('submit', function (e) {
 		$('#lines').modal('toggle');
 	}
 })
-
 map.on(L.Draw.Event.CREATED, function (event) {
 
 	var  type = event.layerType,
-			layer = event.layer;
-			drawnItems.addLayer(layer);
-			modalId = layer._leaflet_id
-			if (type === 'marker') {
-					SubmitFormDev.reset();
+			 layer = event.layer;
+			 drawnItems.addLayer(layer);
+			 modalId = layer._leaflet_id
+
+			 if (type === 'marker') {
+				//layer._icon.src = document.querySelector('#image_3').src
+				SubmitFormDev.reset();
+				  id_layer.value = layer._leaflet_id
 					x = layer._latlng.lat,
 					y = layer._latlng.lng
 					$("#device").modal();
@@ -187,6 +162,17 @@ map.on(L.Draw.Event.CREATED, function (event) {
 				})
 			}
 			if(type === 'rectangle'){
+				console.log(layer)
+				btnColor.addEventListener('click',function(e){
+					var r = Math.floor(Math.random() * 256);
+					var g = Math.floor(Math.random() * 256);
+					var b = Math.floor(Math.random() * 256);
+					//var color = "rgb" + "(" + r + "," + g + "," + b + ")";
+					var color="#FFF"
+					//console.log(drawnItems._layers[layer._leaflet_id].options)
+					drawnItems._layers[layer._leaflet_id].options.color = color
+				})
+
 				$("#lines").modal();
 				x1 = layer._latlngs[0][0],
 				y1 = layer._latlngs[0][1],
@@ -215,7 +201,7 @@ map.on(L.Draw.Event.CREATED, function (event) {
 					}
 			})
 			}
-		});
+});
 
 map.on(L.Draw.Event.EDITED, function(e) {
 	var layers = e.layers;
@@ -244,7 +230,6 @@ map.on(L.Draw.Event.EDITED, function(e) {
 		}
 });
 
-//Get Data
 document.querySelector('#data').addEventListener('click', function () {
 	document.querySelector('.line').innerHTML = JSON.stringify(data)
 })
@@ -260,11 +245,36 @@ function ShowIcon(input, selector){
 	}
 }
 
-function saveData() {
-  var data = new FormData(document.getElementById("myForm"));
-	var inputs = document.querySelectorAll('input[type=file]');
-	Array.prototype.forEach.call(inputs[0].files, function(index){
-		data.append('files', index);
+
+function selectColor(color){
+	selectedColor=color;
+	for(var i=0;i<colors.length;i++){
+		let currentColor = colors[i]
+		colorButtons[currentColor].style.border =currentColor == color ? '2px solid #333' : '2px solid #fff';
+	}
+}
+buildColorPalette();
+function buildColorPalette() {
+	var colorPalette = document.getElementById('color-palette');
+	for (var i = 0; i < colors.length; ++i) {
+		var currColor = colors[i];
+		var colorButton = makeColorButton(currColor);
+		colorPalette.appendChild(colorButton);
+		colorButtons[currColor] = colorButton;
+	}
+	selectColor(colors[0]);
+}
+
+function makeColorButton(color) {
+	var button = document.createElement('span');
+	button.className = 'color-button';
+	button.style.backgroundColor = color;
+	L.DomEvent.addListener(button, 'click', function() {
+		selectColor(color);
 	});
-	DataFile.push(data.getAll("myFile[]"))
-};
+	return button;
+}
+
+
+
+

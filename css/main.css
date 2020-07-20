@@ -8,11 +8,22 @@
 .leaflet-touch .leaflet-draw-toolbar .leaflet-draw-draw-water {
   background-position: -60px -1px;
 }
-.leaflet-draw-toolbar a:nth-child(6){
-  background:url('../device.png') no-repeat;
+.leaflet-draw-toolbar a{
   position: relative;
-  left: 5px;
-  top: 5px;
+}
+.leaflet-draw-toolbar a:nth-child(3){
+  background: none;
+
+}
+.leaflet-draw-toolbar a:nth-child(3):before{
+  content: "\f1cd";
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  position: absolute;
+  left: 7px;
+  top: 2px;
+  color: #FFF;
 }
 
 .image-upload > input
@@ -20,11 +31,18 @@
     display: none;
     cursor: pointer;
 }
-
-.upload{
-  float: right;
-  margin-top: 10px;
-}
 img{
   width:30px;height:30px;margin-right: 5px;
+}
+
+#color-palette {
+  clear: both;
+}
+.color-button {
+  width: 20px;
+  height: 20px;
+  font-size: 0;
+  margin: 2px;
+  float: left;
+  cursor: pointer;
 }
