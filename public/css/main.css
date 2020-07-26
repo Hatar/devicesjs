@@ -11,10 +11,15 @@
 .leaflet-draw-toolbar a{
   position: relative;
 }
+.leaflet-draw-draw-rectangle,
+.leaflet-draw-draw-marker{background-color: #333 !important;border-bottom: 0 !important;color: #FFF !important;}
 .leaflet-draw-toolbar a:nth-child(3){
   background: none;
-
+  border-bottom: 0;
 }
+
+.leaflet-draw-draw-marker:before,
+.leaflet-draw-draw-rectangle,
 .leaflet-draw-toolbar a:nth-child(3):before{
   content: "\f1cd";
   font-family: FontAwesome;
@@ -25,7 +30,19 @@
   top: 2px;
   color: #FFF;
 }
-
+.leaflet-draw-draw-marker:before{
+  content: "\f041";
+  left: 10px;
+  top: 2px;
+}
+.leaflet-draw-draw-rectangle:before{
+  content: "\f018";
+  left: 7px;
+  top: 2px;
+}
+.leaflet-bar a:first-child{
+  left: 0;
+}
 .image-upload > input
 {
     display: none;

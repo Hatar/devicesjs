@@ -1,19 +1,20 @@
-	var data = {
-	"devices":[],
-	"lines" :[]
-},
+//Variable
+var socket = io.connect('http://localhost:5000'),
+	data = {"devices":[],"lines" :[],"detecteur":[]},
 	fname = document.querySelector("#fname"),
 	nameL = document.querySelector("#nameL"),
+	nameD = document.querySelector("#nameD"),
 	SubmitFormDev = document.querySelector('#submitFormDevice'),
 	SubmitFormLin = document.querySelector('#submitFormLines'),
+	SubmitFormDect = document.querySelector('#submitFormDtect'),
+	save = document.querySelector('#savedevice'),
 	btnClose = document.querySelectorAll('#close'),
 	deviceModal = document.querySelector('#device'),
 	list_icones = document.querySelector('#icones'),
-	colors = ['#1E90FF', '#FF1493', '#32CD32', '#FF8C00', '#4B0082'],
-	drawingManager,
+	colors = ['#1E90FF', '#FF1493'],
 	selectedColor,
-	selectedShape,
-	colorButtons = {},
+	customColor,
+	colorButtons ={},
 	x = 0,
 	y = 0,
 	x1 =[],
@@ -23,6 +24,7 @@
 	modalId = 0,
 	map = L.map('map').setView([31.58831, -7.11138], 6);
 	L.tileLayer('https://via.placeholder.com/{z}/{x}/{y}.png').addTo(map);
+
 	clearBtn.onclick = (e)=>{
 		if(id_layer.value) drawnItems._layers[id_layer.value]._icon.src = document.querySelector("#image_1").src
 	};
@@ -37,7 +39,6 @@
 
 	var drawnItems = new L.FeatureGroup();
 	map.addLayer(drawnItems);
-
 	var drawControl = new L.Control.Draw({
 		edit: {
 			featureGroup: drawnItems,
@@ -47,17 +48,14 @@
 			showArea: true,
 			metric: true,
 			repeatMode: true,
-		}
+			selectedPathOptions: {
+        maintainColor: true,
+        opacity: 0.3
+    },
+		},
 	});
 
-	var customMarker = L.Icon.extend({
-		options: {
-			iconSize: new L.polygon(30, 30),
-			iconUrl: "../image/detecteur.png"
-		}
-	})
-
-
+//Adding Toolbar Leaflet
 L.DrawToolbar.include({
 	getModeHandlers: function (map) {
 		return [
@@ -69,7 +67,7 @@ L.DrawToolbar.include({
 					metric: true,
 					repeatMode: true,
 					shapeOptions: {
-						color: '#F2F2F2',
+						color:"#F2F2F2",
 						weight: 5,
 						fillOpacity: .5
 					}
@@ -79,15 +77,22 @@ L.DrawToolbar.include({
 			{
 				enabled: true,
 				handler: new L.Draw.Marker(map, {
-				//icon: new L.Icon.Default()
-				//	icon:new configMarker()
+					icon: new L.Icon.Default()
 				}),
 				title: 'Add Device'
 			},
 			{
 				enabled: true,
-				handler: new L.Draw.Marker(map, {
-					icon: new customMarker()
+				handler: new L.Draw.Circle(map, {
+					allowIntersection: false,
+					showArea: true,
+					metric: true,
+					repeatMode: true,
+					shapeOptions: {
+						color:"#F2F2F2",
+						weight: 5,
+						fillOpacity: .5
+					}
 				}),
 				title: 'Add Detecteur',
 			}
@@ -96,6 +101,7 @@ L.DrawToolbar.include({
 });
 map.addControl(drawControl);
 
+//Submit Form Device
 SubmitFormDev.addEventListener('submit', function (e) {
 	e.preventDefault();
     let result = data.devices.filter(marker => marker.id === modalId);
@@ -106,7 +112,8 @@ SubmitFormDev.addEventListener('submit', function (e) {
 			x: x,
 			y: y
 		});
-
+		//Send Data to Serveur
+		socket.emit('device',data.devices)
 		SubmitFormDev.reset();
 		$('#device').modal('toggle');
 	} else {
@@ -115,11 +122,10 @@ SubmitFormDev.addEventListener('submit', function (e) {
 		$('#device').modal('toggle');
 	}
 })
-
-
+//Submit Form Line
 SubmitFormLin.addEventListener('submit', function (e) {
 	e.preventDefault();
-    let result = data.lines.filter(lines => lines.id === modalId);
+	let result = data.lines.filter(lines => lines.id === modalId);
 	if (result.length == 0) {
 		data.lines.push({
 			id: modalId,
@@ -135,9 +141,34 @@ SubmitFormLin.addEventListener('submit', function (e) {
 		result[0].nameL = nameL.value;
 		SubmitFormLin.reset();
 		$('#lines').modal('toggle');
+		changeColor()
+	}
+	changeColor()
+})
+//Submit Form Detectteur
+SubmitFormDect.addEventListener('submit', function (e) {
+	e.preventDefault();
+	let result = data.detecteur.filter(detect => detect.id === modalId);
+	if (result.length == 0) {
+	data.detecteur.push({
+		id: modalId,
+		nameD: nameD.value,
+		x: x,
+		y : y
+	} ) ;
+
+
+	SubmitFormDect.reset();
+	$('#detecteur').modal('toggle');
+	} else {
+		result[0].nameD = nameD.value;
+		SubmitFormDect.reset();
+		$('#detecteur').modal('toggle');
 	}
 })
-map.on(L.Draw.Event.CREATED, function (event) {
+
+//Event Draw Create Shape Leaflet
+map.on(L.Draw.Event.CREATED,function (event) {
 
 	var  type = event.layerType,
 			 layer = event.layer;
@@ -145,8 +176,8 @@ map.on(L.Draw.Event.CREATED, function (event) {
 			 modalId = layer._leaflet_id
 
 			 if (type === 'marker') {
-				//layer._icon.src = document.querySelector('#image_3').src
 				SubmitFormDev.reset();
+					console.log(layer._leaflet_id)
 				  id_layer.value = layer._leaflet_id
 					x = layer._latlng.lat,
 					y = layer._latlng.lng
@@ -162,17 +193,6 @@ map.on(L.Draw.Event.CREATED, function (event) {
 				})
 			}
 			if(type === 'rectangle'){
-				console.log(layer)
-				btnColor.addEventListener('click',function(e){
-					var r = Math.floor(Math.random() * 256);
-					var g = Math.floor(Math.random() * 256);
-					var b = Math.floor(Math.random() * 256);
-					//var color = "rgb" + "(" + r + "," + g + "," + b + ")";
-					var color="#FFF"
-					//console.log(drawnItems._layers[layer._leaflet_id].options)
-					drawnItems._layers[layer._leaflet_id].options.color = color
-				})
-
 				$("#lines").modal();
 				x1 = layer._latlngs[0][0],
 				y1 = layer._latlngs[0][1],
@@ -180,6 +200,7 @@ map.on(L.Draw.Event.CREATED, function (event) {
 				y2 = layer._latlngs[0][3]
 				$("#lines").modal();
 				layer.addEventListener('click', function (e) {
+				$('#color-palette').css('display','none')
 				modalId = e.target._leaflet_id
 				$('#lines').modal('show');
 				let result = data.lines.filter(lines => lines.id === e.target._leaflet_id);
@@ -187,6 +208,23 @@ map.on(L.Draw.Event.CREATED, function (event) {
 					nameL.value = result[0].nameL;
 				}
 			})
+			}
+			if(type ==='circle'){
+
+				$("#detecteur").modal();
+				SubmitFormDect.reset();
+					x = layer._latlng.lat,
+					y = layer._latlng.lng
+					$("#detecteur").modal();
+					layer.addEventListener('click', function (e) {
+						modalId = e.target._leaflet_id
+						$('#detecteur').modal('show');
+						let result = data.detecteur.filter(detect => detect.id == e.target._leaflet_id);
+						if (result.length !== 0) {
+							nameD.value = result[0].nameD;
+						}
+						$('#detecteur').modal('toggle');
+				} )
 			}
 			for(var i=0;i<btnClose.length;i++){
 				btnClose[i].addEventListener('click',function(e){
@@ -198,11 +236,16 @@ map.on(L.Draw.Event.CREATED, function (event) {
 						map.eachLayer(function(layer){
 							map.removeLayer(drawnItems._layers[modalId])
 						})
+					}else if(type === 'circle' && nameD.value === ''){
+						map.eachLayer(function(layer){
+							map.removeLayer(drawnItems._layers[modalId])
+						})
 					}
 			})
 			}
 });
 
+//Event Draw Update Shape Leaflet
 map.on(L.Draw.Event.EDITED, function(e) {
 	var layers = e.layers;
 	layers.eachLayer(function(layer) {
@@ -228,12 +271,22 @@ map.on(L.Draw.Event.EDITED, function(e) {
 				}
 			}
 		}
-});
+		values_dect = drawnItems._layers;
+		for (var key in values_dect) {
+			for (var i in data.detecteur) {
+				if (key == data.detecteur[i].id) {
+					data.detecteur[i].x = values_dect[key]._latlng.lat
+					data.detecteur[i].y = values_dect[key]._latlng.lng
+				}
+			}
+		}});
 
+//Get Data
 document.querySelector('#data').addEventListener('click', function () {
 	document.querySelector('.line').innerHTML = JSON.stringify(data)
 })
 
+//Function Show icon Device[clear,use,warning] file upload
 function ShowIcon(input, selector){
 	if (input.files && input.files[0])
 	{
@@ -244,7 +297,9 @@ function ShowIcon(input, selector){
 		reader.readAsDataURL(input.files[0]);
 	}
 }
-
+/*
+Start Change Color rectangle when Created
+*/
 
 function selectColor(color){
 	selectedColor=color;
@@ -262,19 +317,31 @@ function buildColorPalette() {
 		colorPalette.appendChild(colorButton);
 		colorButtons[currColor] = colorButton;
 	}
-	selectColor(colors[0]);
+	selectColor(colors);
 }
 
 function makeColorButton(color) {
 	var button = document.createElement('span');
 	button.className = 'color-button';
 	button.style.backgroundColor = color;
-	L.DomEvent.addListener(button, 'click', function() {
+	L.DomEvent.addListener(button, 'click', function(e) {
+		drawnItems._layers[modalId].options.color = color;
+		customColor=color
 		selectColor(color);
 	});
 	return button;
 }
 
+function changeColor(){
+	var n=0;
+	n = $('.leaflet-interactive').length;
+	$(".leaflet-interactive:nth-child("+n+")").css({fill:customColor,stroke:customColor})
+}
 
-
-
+/*
+	End Change Color rectangle when Created
+*/
+//Get Data Ffrom Server
+socket.on('data_devices',function(result){
+		console.log(result)
+})

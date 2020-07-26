@@ -7,9 +7,9 @@
       <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
-      <link rel="stylesheet" href="css/bootstrap.min.css">
-      <link rel="stylesheet" href="css/font-awesome.min.css">
-      <link rel="stylesheet" href="css/main.css">
+      <link rel="stylesheet" href="../css/bootstrap.min.css">
+      <link rel="stylesheet" href="../css/font-awesome.min.css">
+      <link rel="stylesheet" href="../css/main.css">
       <title>Map Project</title>
    </head>
    <body>
@@ -20,12 +20,6 @@
             </div>
          </div>
          <div class="row">
-            <div class="col mt-2">
-               <div id="color-palette"></div>
-            </div>
-            <div class="col mt-2">
-               <button id="btnColor" class="btn btn-info btn-sm">change</button>
-            </div>
             <div class="col mt-2" style=" display: flex;justify-content: flex-end;">
                <form id="myForm" enctype="multipart/form-data">
                   <div class="col-md-3 d-flex">
@@ -48,11 +42,8 @@
                         <input type="file" name="myFile[]" id="myFile_3" onchange='ShowIcon(this, "image_3")'/>
                      </div>
                   </div>
-                  <div id="result"></div>
                </form>
             </div>
-         </div>
-         <div class="row">
          </div>
          <div class="clearfix"></div>
          <div class="row text-center mt-3">
@@ -104,7 +95,7 @@
                      </div>
                   </div>
                   <div class="modal-footer">
-                     <button type="submit" class="btn btn-success" id="save">Save</button>
+                     <button type="submit" class="btn btn-success" id="savedevice">Save</button>
                   </div>
                </form>
             </div>
@@ -129,15 +120,56 @@
                      </div>
                   </div>
                   <div class="modal-footer">
-                     <button type="submit" class="btn btn-success" id="save">Save</button>
+                     <div class="row">
+                        <div class="col mt-2" style="float: left;">
+                           <div id="color-palette"></div>
+                        </div>
+                        <div class="col">
+                           <button type="submit" class="btn btn-success" id="save">Save</button>
+                        </div>
+                     </div>
+                  </div>
+               </form>
+            </div>
+         </div>
+      </div>
+      <!--Modal Detectteur-->
+      <div class="modal fade" id="detecteur" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" data-backdrop="static" data-keyboard="false" >
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title">Detecteur Info</h5>
+                  <button type="button" id="close" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <form action="" id="submitFormDtect">
+
+                  <div class="modal-body">
+                     <div class="form-group">
+                        <input type="hidden" name="id_marker" id="id_marker" class="modal"/>
+                        <label for="name">Name :</label>
+                        <input type="text" name="nameD" id="nameD" class="form-control" placeholder="Enter something" aria-describedby="helpId" required>
+                     </div>
+                  </div>
+                  <div class="modal-footer">
+                     <div class="row">
+                        <div class="col mt-2" style="float: left;">
+                           <div id="color-palette"></div>
+                        </div>
+                        <div class="col">
+                           <button type="submit" class="btn btn-success" id="save">Save</button>
+                        </div>
+                     </div>
                   </div>
                </form>
             </div>
          </div>
       </div>
       <script src="js/jquery.min.js"></script>
+      <script src="/socket.io/socket.io.js"></script>
       <script src="js/bootstrap.min.js"></script>
-      <script src="js/popper.min.js"></script>
       <script src="js/main.js"></script>
+      <script src="js/client.js"></script>
    </body>
 </html>
