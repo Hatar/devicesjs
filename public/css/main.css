@@ -21,7 +21,7 @@
 .leaflet-draw-draw-marker:before,
 .leaflet-draw-draw-rectangle,
 .leaflet-draw-toolbar a:nth-child(3):before{
-  content: "\f1cd";
+  content: "\f1b9";
   font-family: FontAwesome;
   font-style: normal;
   font-weight: normal;

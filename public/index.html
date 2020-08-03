@@ -25,19 +25,19 @@
                   <div class="col-md-3 d-flex">
                      <div class="image-upload">
                         <label for="myFile_1">
-                           <img src="./image/upload.png" id="image_1"/>
+                        <img src="./image/upload.png" id="image_1"/>
                         </label>
                         <input type="file" name="myFile[]" id="myFile_1" onchange='ShowIcon(this, "image_1")'>
-                    </div>
-                    <div class="image-upload">
+                     </div>
+                     <div class="image-upload">
                         <label for="myFile_2">
-                           <img src="./image/upload.png"  id="image_2"/>
+                        <img src="./image/upload.png"  id="image_2"/>
                         </label>
                         <input type="file" name="myFile[]" id="myFile_2" onchange='ShowIcon(this, "image_2")'>
                      </div>
                      <div class="image-upload">
                         <label for="myFile_3">
-                         <img src="./image/upload.png"  id="image_3"/>
+                        <img src="./image/upload.png"  id="image_3"/>
                         </label>
                         <input type="file" name="myFile[]" id="myFile_3" onchange='ShowIcon(this, "image_3")'/>
                      </div>
@@ -50,16 +50,16 @@
             <div class="col">
                <button class="btn btn-danger btn-sm" id="data">Get Data</button>
                <button class="btn btn-info btn-sm" id="clearBtn">
-                  <input type="hidden" name="id" id="id_layer">
-                  Clear
+               <input type="hidden" name="id" id="id_layer">
+               Clear
                </button>
                <button class="btn btn-primary btn-sm" id="useBtn">
-                  <input type="hidden" name="id" id="id_layer">
-                  Use
+               <input type="hidden" name="id" id="id_layer">
+               Use
                </button>
                <button class="btn btn-warning btn-sm" id="warBtn">
-                  <input type="hidden" name="id" id="id_layer">
-                  Warning
+               <input type="hidden" name="id" id="id_layer">
+               Warning
                </button>
             </div>
          </div>
@@ -82,11 +82,11 @@
             <div class="modal-content">
                <div class="modal-header">
                   <h5 class="modal-title">Device Info</h5>
-                  <button type="button" id="close" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
+                  <button type="button" id="closeD" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
                   </button>
                </div>
-               <form action="" id="submitFormDevice">
+               <form action="" id="submitFormDevice" enctype="multipart/form-data">
                   <div class="modal-body">
                      <div class="form-group">
                         <input type="hidden" name="id_marker" id="id_marker" class="modal"/>
@@ -101,14 +101,14 @@
             </div>
          </div>
       </div>
-       <!--Modal Lines-->
-       <div class="modal fade" id="lines" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" data-backdrop="static" data-keyboard="false" >
+      <!--Modal Lines-->
+      <div class="modal fade" id="lines" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" data-backdrop="static" data-keyboard="false" >
          <div class="modal-dialog" role="document">
             <div class="modal-content">
                <div class="modal-header">
                   <h5 class="modal-title">Lines Info</h5>
-                  <button type="button" id="close" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
+                  <button type="button" id="closeL" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
                   </button>
                </div>
                <form action="" id="submitFormLines">
@@ -133,30 +133,26 @@
             </div>
          </div>
       </div>
-      <!--Modal Detectteur-->
-      <div class="modal fade" id="detecteur" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" data-backdrop="static" data-keyboard="false" >
+      <!--Modal Detecteur-->
+      <div class="modal fade" id="capteur" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true" data-backdrop="static" data-keyboard="false" >
          <div class="modal-dialog" role="document">
             <div class="modal-content">
                <div class="modal-header">
-                  <h5 class="modal-title">Detecteur Info</h5>
-                  <button type="button" id="close" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
+                  <h5 class="modal-title">capteur Info</h5>
+                  <button type="button" id="closeC" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
                   </button>
                </div>
-               <form action="" id="submitFormDtect">
-
+               <form action="" id="submitFormCap">
                   <div class="modal-body">
                      <div class="form-group">
-                        <input type="hidden" name="id_marker" id="id_marker" class="modal"/>
+                        <input type="hidden" name="id_cap" id="id_cap" class="modal"/>
                         <label for="name">Name :</label>
-                        <input type="text" name="nameD" id="nameD" class="form-control" placeholder="Enter something" aria-describedby="helpId" required>
+                        <input type="text" name="nameC" id="nameC" class="form-control" placeholder="Enter something" aria-describedby="helpId" required>
                      </div>
                   </div>
                   <div class="modal-footer">
                      <div class="row">
-                        <div class="col mt-2" style="float: left;">
-                           <div id="color-palette"></div>
-                        </div>
                         <div class="col">
                            <button type="submit" class="btn btn-success" id="save">Save</button>
                         </div>
